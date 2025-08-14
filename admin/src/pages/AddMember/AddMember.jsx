@@ -44,7 +44,7 @@ const AddMember = () => {
   const fetchRoomOccupancy = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/member/room-occupancy"
+        "https://getinnpgbackend.onrender.com/api/member/room-occupancy"
       );
       if (response.data.success) {
         setRoomOccupancy(response.data.occupancy);
@@ -318,7 +318,7 @@ const AddMember = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/member/add",
+        "https://getinnpgbackend.onrender.com/api/member/add",
         formData,
         {
           headers: {

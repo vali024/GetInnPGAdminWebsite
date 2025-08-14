@@ -15,7 +15,7 @@ const RentalData = () => {
   const [filterRoomType, setFilterRoomType] = useState('all');
   const [filterFloorNumber, setFilterFloorNumber] = useState('all');
 
-  const url = "http://localhost:4000";
+  const url = "https://getinnpgbackend.onrender.com";
   const defaultImage = 'https://via.placeholder.com/100x100?text=No+Image';
 
   const months = [

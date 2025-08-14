@@ -27,7 +27,7 @@ const MembersList = () => {
     floorNumber: "all",
   });
 
-  const url = "http://localhost:4000";
+  const url = "https://getinnpgbackend.onrender.com";
 
   // Get unique genders from the members
   const genders = ["all", ...new Set(members.map((member) => member.gender))];
