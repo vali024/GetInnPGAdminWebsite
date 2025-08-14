@@ -1,4 +1,11 @@
 {
+  "name": "get-inn-pg-admin",
+  "version": "1.0.0",
+  "scripts": {
+    "install-all": "npm install && cd admin && npm install && cd ../backend && npm install",
+    "build": "npm run build",
+    "start": "node server.js"
+  },
   "dependencies": {
     "react-icons": "^5.5.0"
   }
