@@ -47,6 +47,8 @@ const addMember = async (req, res) => {
             age,
             phoneNumber,
             emailId,
+            parentsNumber,
+            address,
             occupation,
             amount,
             status = 'active',
@@ -130,6 +132,22 @@ const addMember = async (req, res) => {
             });
         }
 
+        // Validate parents' contact number format
+        if (!parentsNumber || !/^\d{10}$/.test(parentsNumber)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide a valid 10-digit parents' contact number"
+            });
+        }
+
+        // Validate address
+        if (!address?.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide address"
+            });
+        }
+
         // Validate email format
         if (!emailId || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailId)) {
             return res.status(400).json({
@@ -147,6 +165,16 @@ const addMember = async (req, res) => {
             });
         }
 
+        // Check for duplicate parents' contact number
+        const existingParentsPhone = await memberModel.findOne({ parentsNumber });
+        if (existingParentsPhone) {
+            return res.status(400).json({
+                success: false,
+                message: "A member with this parents' contact number already exists"
+            });
+        }
+
+
         // Check for duplicate email
         const existingEmail = await memberModel.findOne({ emailId });
         if (existingEmail) {
@@ -162,6 +190,8 @@ const addMember = async (req, res) => {
             age: Number(age),
             phoneNumber,
             emailId,
+            parentsNumber,
+            address,
             occupation,
             amount: Number(amount),
             profilePic: req.file.filename,
@@ -227,14 +257,17 @@ const deleteMember = async (req, res) => {
             });
         }
 
-        // Delete profile picture
-        try {
-            const imagePath = path.join(__dirname, '../uploads', member.profilePic);
-            if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
+        // Delete profile picture if it exists
+        if (member.profilePic) {
+            try {
+                const imagePath = path.join('uploads', member.profilePic);
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath);
+                    console.log('Successfully deleted profile picture:', member.profilePic);
+                }
+            } catch (error) {
+                console.error('Error deleting profile picture:', error);
             }
-        } catch (error) {
-            console.error('Error deleting profile picture:', error);
         }
 
         await memberModel.findByIdAndDelete(id);
@@ -293,6 +326,17 @@ const updateMember = async (req, res) => {
                 return res.status(400).json({
                     success: false,
                     message: "A member with this phone number already exists"
+                });
+            }
+        }
+
+        // Check for duplicate parents' contact number
+        if (updates.parentsNumber && updates.parentsNumber !== member.parentsNumber) {
+            const existingParentsPhone = await memberModel.findOne({ parentsNumber: updates.parentsNumber });
+            if (existingParentsPhone) {
+                return res.status(400).json({
+                    success: false,
+                    message: "A member with this parents' contact number already exists"
                 });
             }
         }

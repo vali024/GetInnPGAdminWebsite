@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import AddMember from "./pages/AddMember/AddMember";
 import MembersList from "./pages/MembersList/MembersList";
 import RentalData from "./pages/RentalData/RentalData";
+import RoomManagement from "./pages/RoomManagement/RoomManagement";
 import Login from "./pages/Login/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
@@ -71,6 +72,16 @@ const App = () => {
             <ProtectedRoute>
               <AuthenticatedLayout>
                 <RentalData />
+              </AuthenticatedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rooms"
+          element={
+            <ProtectedRoute>
+              <AuthenticatedLayout>
+                <RoomManagement />
               </AuthenticatedLayout>
             </ProtectedRoute>
           }

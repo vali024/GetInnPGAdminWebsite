@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import "./AddMember.css";
 import upload_area from "../../assets/upload_area.png";
 
+const url = import.meta.env.VITE_BACKEND_URL;
+
 const AddMember = () => {
   const [data, setData] = useState({
     fullName: "",
@@ -11,6 +13,8 @@ const AddMember = () => {
     age: "",
     phoneNumber: "",
     emailId: "",
+    parentsNumber: "",
+    address: "",
     occupation: "",
     amount: "",
     status: "active",
@@ -43,9 +47,7 @@ const AddMember = () => {
   // Fetch room occupancy data
   const fetchRoomOccupancy = async () => {
     try {
-      const response = await axios.get(
-        "https://getinnpgbackend.onrender.com/api/member/room-occupancy"
-      );
+      const response = await axios.get(`${url}/api/member/room-occupancy`);
       if (response.data.success) {
         setRoomOccupancy(response.data.occupancy);
         console.log("Room occupancy updated:", response.data.occupancy);
@@ -309,6 +311,8 @@ const AddMember = () => {
     formData.append("age", data.age);
     formData.append("phoneNumber", data.phoneNumber);
     formData.append("emailId", data.emailId);
+    formData.append("parentsNumber", data.parentsNumber);
+    formData.append("address", data.address);
     formData.append("occupation", data.occupation);
     formData.append("amount", data.amount);
     formData.append("status", data.status);
@@ -318,7 +322,7 @@ const AddMember = () => {
 
     try {
       const response = await axios.post(
-        "https://getinnpgbackend.onrender.com/api/member/add",
+        `${url}/api/member/add`,
         formData,
         {
           headers: {
@@ -338,6 +342,8 @@ const AddMember = () => {
           age: "",
           phoneNumber: "",
           emailId: "",
+          parentsNumber: "",
+          address: "",
           occupation: "",
           amount: "",
           status: "active",
@@ -475,6 +481,23 @@ const AddMember = () => {
 
           <div className="form-group">
             <p>
+              Parent's Number <span className="required">*</span>
+            </p>
+            <input
+              value={data.parentsNumber}
+              onChange={inputHandler}
+              type="tel"
+              name="parentsNumber"
+              placeholder="Enter parent's 10-digit number"
+              pattern="[0-9]{10}"
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <p>
               Email ID <span className="required">*</span>
             </p>
             <input
@@ -486,6 +509,21 @@ const AddMember = () => {
               className="form-input"
             />
           </div>
+        </div>
+
+        <div className="form-group">
+          <p>
+            Address <span className="required">*</span>
+          </p>
+          <textarea
+            value={data.address}
+            onChange={inputHandler}
+            name="address"
+            placeholder="Enter full address"
+            className="form-input"
+            rows="3"
+            style={{ resize: 'vertical' }}
+          />
         </div>
 
         <div className="form-row">

@@ -32,13 +32,52 @@
 
 .list-title {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #28a745;
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    margin-left: 16px;
+}
+
+.download-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.download-btn svg {
+    font-size: 16px;
 }
 
 .member-count {
     color: #666;
     font-size: 14px;
+}
+
+@media screen and (max-width: 768px) {
+    .list-title {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .download-btn {
+        margin-left: 0;
+        font-size: 13px;
+        padding: 6px 12px;
+    }
 }
 
 .search-bar {
@@ -121,12 +160,34 @@
 }
 
 .list-table::-webkit-scrollbar-thumb {
-    background: #888;
+    background: rgba(107,142,35,0.3);
     border-radius: 4px;
 }
 
 .list-table::-webkit-scrollbar-thumb:hover {
-    background: #666;
+    background: rgba(107,142,35,0.5);
+}
+
+/* Add touch scrolling hint */
+.list-table::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 40px;
+    background: rgba(107,142,35,0.1);
+    border-radius: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+@media (max-width: 968px) {
+    .list-table::before {
+        opacity: 1;
+    }
 }
 
 /* Sticky header for the table */
@@ -175,6 +236,7 @@
         minmax(180px, 1fr)     /* Contact */
         minmax(150px, 1fr)     /* Room Info */
         minmax(150px, 1fr)     /* Details */
+        minmax(200px, 1.5fr)   /* Address */
         minmax(100px, auto)    /* Amount */
         minmax(100px, auto)    /* Status */
         minmax(100px, auto);   /* Actions */
@@ -446,9 +508,45 @@
     background: #e5e7eb;
 }
 
+.address-info {
+    max-width: 230px;
+    min-width: 200px;
+}
+
+.address-info .address {
+    font-size: 0.8rem;
+    color: #4a5568;
+    line-height: 1.4;
+    max-height: 2.8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+    margin: 0;
+    padding: 4px 8px;
+    background: #f8fafc;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.address-info .address:hover {
+    background: #edf2f7;
+    max-height: none;
+}
+
 @media (max-width: 1200px) {
     .list-table-format {
-        grid-template-columns: 80px 150px 150px 130px 130px 100px 100px 100px;
+        grid-template-columns: 
+            minmax(60px, auto)     /* Profile */
+            minmax(120px, 1fr)     /* Name */
+            minmax(150px, 1fr)     /* Contact */
+            minmax(120px, 1fr)     /* Room Info */
+            minmax(120px, 1fr)     /* Details */
+            minmax(150px, 1.2fr)   /* Address */
+            minmax(90px, auto)     /* Amount */
+            minmax(90px, auto)     /* Status */
+            minmax(90px, auto);    /* Actions */
         gap: 12px;
         font-size: 13px;
     }
@@ -457,13 +555,41 @@
         width: 50px;
         height: 50px;
     }
+
+    .contact-info {
+        display: grid;
+        grid-template-rows: auto auto;
+        gap: 4px;
+    }
+
+    .contact-info p, .contact-info span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 @media (max-width: 968px) {
+    .list {
+        padding: 10px;
+    }
+
     .list-header {
         flex-direction: column;
         gap: 16px;
         align-items: stretch;
+        padding: 15px;
+    }
+
+    .list-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .list-title p {
+        font-size: 20px;
+        margin-bottom: 0;
     }
 
     .search-bar {
@@ -472,18 +598,153 @@
     }
 
     .filters {
-        justify-content: stretch;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .filters select {
-        flex: 1;
+        width: 100%;
+        max-width: none;
     }
     
     .list-table {
         overflow-x: auto;
+        margin: 0 -10px;
+        padding: 0 10px;
+        -webkit-overflow-scrolling: touch;
     }
     
     .list-table-format {
         min-width: 900px;
+        padding: 12px 15px;
+        gap: 12px;
+    }
+
+    .list-table-format.title p {
+        font-size: 13px;
+    }
+
+    .name-info p {
+        font-size: 13px;
+    }
+
+    .name-info span, 
+    .contact-info span, 
+    .other-details span,
+    .room-info span {
+        font-size: 12px;
+    }
+
+    .address-info {
+        max-width: 180px;
+        min-width: 150px;
+    }
+
+    .address-info .address {
+        font-size: 12px;
+        padding: 3px 6px;
+    }
+
+    .amount-info .amount {
+        font-size: 14px;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .actions {
+        gap: 6px;
+    }
+
+    .edit-btn, 
+    .remove-btn, 
+    .save-btn, 
+    .cancel-btn {
+        padding: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .list {
+        padding: 8px;
+    }
+
+    .list-header {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .list-title p {
+        font-size: 18px;
+    }
+
+    .search-bar input {
+        padding: 8px 32px 8px 12px;
+        font-size: 13px;
+    }
+
+    .filters select {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    .list-table {
+        margin: 0 -8px;
+        padding: 0 8px;
+    }
+
+    .list-table-format {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .list-table-format img {
+        width: 45px;
+        height: 45px;
+    }
+
+    /* Show horizontal scroll indicator */
+    .list-table::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, 
+            rgba(107,142,35,0.2) 0%, 
+            rgba(107,142,35,0.1) 50%, 
+            rgba(107,142,35,0) 100%);
+        pointer-events: none;
+        animation: scrollIndicator 1.5s infinite;
+    }
+
+    @keyframes scrollIndicator {
+        0% { opacity: 0.8; }
+        50% { opacity: 0.4; }
+        100% { opacity: 0.8; }
+    }
+
+    /* Delete confirmation dialog adjustments */
+    .delete-confirmation-dialog {
+        padding: 16px;
+        width: 95%;
+    }
+
+    .delete-confirmation-dialog h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .delete-confirmation-dialog p {
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+
+    .dialog-buttons button {
+        padding: 6px 12px;
+        font-size: 13px;
     }
 }

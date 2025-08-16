@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import './RentalData.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { FaSpinner, FaBell, FaCheck, FaWhatsapp } from 'react-icons/fa';
+import { FaSpinner, FaBell, FaCheck, FaWhatsapp, FaDownload } from 'react-icons/fa';
+import { CSVLink } from "react-csv";
+import logo from '../../assets/logo.png';
 
 const RentalData = () => {
   const [members, setMembers] = useState([]);
@@ -15,8 +17,8 @@ const RentalData = () => {
   const [filterRoomType, setFilterRoomType] = useState('all');
   const [filterFloorNumber, setFilterFloorNumber] = useState('all');
 
-  const url = "https://getinnpgbackend.onrender.com";
-  const defaultImage = 'https://via.placeholder.com/100x100?text=No+Image';
+  const url = import.meta.env.VITE_BACKEND_URL;
+  const defaultImage = logo;
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -237,6 +239,45 @@ const RentalData = () => {
     return matchesSearch && matchesStatus && matchesRoomType && matchesFloor;
   });
 
+  // Prepare CSV data from filtered members
+  const prepareCSVData = () => {
+    const csvData = [];
+    // Add headers
+    csvData.push([
+      'Name',
+      'Room Number',
+      'Room Type',
+      'Phone Number',
+      'Payment Status',
+      'Payment Date',
+      'Due Amount',
+      'Paid Amount',
+      'Month',
+      'Year'
+    ]);
+
+    // Add member data
+    filteredMembers.forEach(member => {
+      const monthKey = `${currentYear}-${currentMonth + 1}`;
+      const paymentStatus = member.paymentStatus?.[monthKey];
+      
+      csvData.push([
+        member.fullName,
+        member.roomNumber,
+        member.roomType,
+        member.phoneNumber,
+        paymentStatus?.isPaid ? 'Paid' : 'Unpaid',
+        paymentStatus?.paidDate ? new Date(paymentStatus.paidDate).toLocaleDateString() : '-',
+        member.rentAmount || '-',
+        paymentStatus?.paidAmount || '-',
+        months[currentMonth],
+        currentYear
+      ]);
+    });
+
+    return csvData;
+  };
+
   useEffect(() => {
     fetchMembers();
   }, [currentMonth, currentYear]);
@@ -304,6 +345,14 @@ const RentalData = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+          <CSVLink
+            data={prepareCSVData()}
+            filename={`rental-data-${months[currentMonth]}-${currentYear}.csv`}
+            className="download-btn"
+            target="_blank"
+          >
+            <FaDownload /> Export Filtered Data
+          </CSVLink>
         </div>
         
         <div className="monthly-stats">

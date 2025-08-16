@@ -41,6 +41,16 @@ const memberSchema = new mongoose.Schema({
     unique: true,
     match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   },
+  parentsNumber: {
+    type: String,
+    required: true,
+    match: /^\d{10}$/
+  },
+  address: {
+    type: String,
+    required: true,
+    trim: true
+  },
   occupation: {
     type: String,
     required: true,

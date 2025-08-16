@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./MembersList.css";
 import axios from "axios";
 import { toast } from "react-toastify";
+import logo from "../../assets/logo.png";
 import {
   FaSpinner,
   FaEdit,
@@ -9,7 +10,11 @@ import {
   FaTimes,
   FaCheck,
   FaSearch,
+  FaDownload,
 } from "react-icons/fa";
+import { CSVLink } from "react-csv";
+
+const defaultImage = logo;
 
 const MembersList = () => {
   const [members, setMembers] = useState([]);
@@ -27,7 +32,7 @@ const MembersList = () => {
     floorNumber: "all",
   });
 
-  const url = "https://getinnpgbackend.onrender.com";
+  const url = import.meta.env.VITE_BACKEND_URL;
 
   // Get unique genders from the members
   const genders = ["all", ...new Set(members.map((member) => member.gender))];
@@ -140,6 +145,47 @@ const MembersList = () => {
     return matchesSearch && matchesGender && matchesStatus && matchesFloor;
   });
 
+  const prepareCSVData = () => {
+    const csvData = [];
+    // Add headers
+    csvData.push([
+      'Name',
+      'Gender',
+      'Phone Number',
+      "Parent's Number",
+      'Email',
+      'Room Number',
+      'Floor',
+      'Room Type',
+      'Occupation',
+      'Age',
+      'Address',
+      'Amount (₹)',
+      'Status'
+    ]);
+
+    // Add member data
+    filteredMembers.forEach(member => {
+      csvData.push([
+        member.fullName,
+        member.gender,
+        member.phoneNumber,
+        member.parentsNumber,
+        member.emailId,
+        member.roomNumber,
+        member.floorNumber,
+        member.roomType,
+        member.occupation,
+        member.age,
+        member.address,
+        member.amount,
+        member.status
+      ]);
+    });
+
+    return csvData;
+  };
+
   if (loading) {
     return (
       <div className="list add flex-col loading-state">
@@ -188,6 +234,14 @@ const MembersList = () => {
             {filteredMembers.length}{" "}
             {filteredMembers.length === 1 ? "member" : "members"}
           </span>
+          <CSVLink
+            data={prepareCSVData()}
+            filename={`members-list-${new Date().toLocaleDateString('en-CA')}.csv`}
+            className="download-btn"
+            target="_blank"
+          >
+            <FaDownload /> Export Members
+          </CSVLink>
         </div>
         <div className="search-bar">
           <input
@@ -258,6 +312,7 @@ const MembersList = () => {
           <p>Contact</p>
           <p>Room Info</p>
           <p>Details</p>
+          <p>Address</p>
           <p>Amount</p>
           <p>Status</p>
           <p>Actions</p>
@@ -287,6 +342,7 @@ const MembersList = () => {
             </div>
             <div className="contact-info">
               <p>{member.phoneNumber}</p>
+              <span>Parent's: {member.parentsNumber}</span>
               <span>{member.emailId}</span>
             </div>
             <div className="room-info">
@@ -339,6 +395,9 @@ const MembersList = () => {
               <p>{member.occupation}</p>
               <span>{member.age} years old</span>
             </div>
+            <div className="address-info">
+              <p className="address" title={member.address}>{member.address || 'No address provided'}</p>
+            </div>
             <div className="amount-info">
               {editingMember?._id === member._id ? (
                 <input
@@ -379,6 +438,7 @@ const MembersList = () => {
                 </span>
               )}
             </div>
+
             <div className="actions">
               {editingMember?._id === member._id ? (
                 <>
