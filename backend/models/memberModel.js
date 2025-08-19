@@ -71,10 +71,6 @@ const memberSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  profilePic: {
-    type: String,
-    required: true
-  },
   status: {
     type: String,
     enum: ['active', 'inactive'],

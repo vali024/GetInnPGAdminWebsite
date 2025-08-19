@@ -117,13 +117,6 @@ const addMember = async (req, res) => {
             });
         }
 
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: "Please upload a profile picture"
-            });
-        }
-
         // Validate phone number format
         if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
             return res.status(400).json({
@@ -194,7 +187,7 @@ const addMember = async (req, res) => {
             address,
             occupation,
             amount: Number(amount),
-            profilePic: req.file.filename,
+            // profilePic will be set by the default function in the schema
             status,
             roomNumber,
             floorNumber,
@@ -257,18 +250,7 @@ const deleteMember = async (req, res) => {
             });
         }
 
-        // Delete profile picture if it exists
-        if (member.profilePic) {
-            try {
-                const imagePath = path.join('uploads', member.profilePic);
-                if (fs.existsSync(imagePath)) {
-                    fs.unlinkSync(imagePath);
-                    console.log('Successfully deleted profile picture:', member.profilePic);
-                }
-            } catch (error) {
-                console.error('Error deleting profile picture:', error);
-            }
-        }
+        // No need to delete profile picture as we're using emoji icons
 
         await memberModel.findByIdAndDelete(id);
 
@@ -306,18 +288,7 @@ const updateMember = async (req, res) => {
             });
         }
 
-        // Handle profile picture update
-        if (req.file) {
-            try {
-                const oldImagePath = path.join(__dirname, '../uploads', member.profilePic);
-                if (fs.existsSync(oldImagePath)) {
-                    fs.unlinkSync(oldImagePath);
-                }
-                updates.profilePic = req.file.filename;
-            } catch (error) {
-                console.error('Error handling profile picture update:', error);
-            }
-        }
+        // Profile pictures are now emoji-based icons
 
         // Check for duplicate phone number and email if they're being updated
         if (updates.phoneNumber && updates.phoneNumber !== member.phoneNumber) {

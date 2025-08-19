@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./AddMember.css";
-import upload_area from "../../assets/upload_area.png";
-
 const url = import.meta.env.VITE_BACKEND_URL;
 
 const AddMember = () => {
@@ -36,10 +34,7 @@ const AddMember = () => {
     7: ["701", "702"],
   };
 
-  const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [imageError, setImageError] = useState("");
-  const [dragOver, setDragOver] = useState(false);
   const [availableRooms, setAvailableRooms] = useState([]);
   const [roomOccupancy, setRoomOccupancy] = useState({});
   const [filteredRooms, setFilteredRooms] = useState([]);
@@ -179,56 +174,9 @@ const AddMember = () => {
     }
   };
 
-  const validateImage = (file) => {
-    setImageError("");
 
-    if (!file) {
-      setImageError("Please select an image");
-      return false;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      setImageError("Please upload a valid image file");
-      return false;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setImageError("Image size should be less than 5MB");
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleImageDrop = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-
-    const file = e.dataTransfer.files[0];
-    if (validateImage(file)) {
-      setImage(file);
-    } else {
-      toast.error(imageError);
-    }
-  };
-
-  const imageHandler = (e) => {
-    const file = e.target.files[0];
-    if (validateImage(file)) {
-      setImage(file);
-    } else {
-      toast.error(imageError);
-    }
-  };
 
   const validateForm = () => {
-    setImageError("");
-
-    if (!image) {
-      setImageError("Please upload a profile picture");
-      return false;
-    }
-
     if (!data.fullName.trim()) {
       toast.error("Please enter full name");
       return false;
@@ -304,31 +252,26 @@ const AddMember = () => {
     }
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append("profilePic", image);
-    formData.append("fullName", data.fullName);
-    formData.append("gender", data.gender);
-    formData.append("age", data.age);
-    formData.append("phoneNumber", data.phoneNumber);
-    formData.append("emailId", data.emailId);
-    formData.append("parentsNumber", data.parentsNumber);
-    formData.append("address", data.address);
-    formData.append("occupation", data.occupation);
-    formData.append("amount", data.amount);
-    formData.append("status", data.status);
-    formData.append("roomNumber", data.roomNumber);
-    formData.append("floorNumber", data.floorNumber);
-    formData.append("roomType", data.roomType);
+    const memberData = {
+      fullName: data.fullName,
+      gender: data.gender,
+      age: data.age,
+      phoneNumber: data.phoneNumber,
+      emailId: data.emailId,
+      parentsNumber: data.parentsNumber,
+      address: data.address,
+      occupation: data.occupation,
+      amount: data.amount,
+      status: data.status,
+      roomNumber: data.roomNumber,
+      floorNumber: data.floorNumber,
+      roomType: data.roomType
+    };
 
     try {
       const response = await axios.post(
         `${url}/api/member/add`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        memberData
       );
 
       if (response.data.success) {
@@ -351,7 +294,7 @@ const AddMember = () => {
           floorNumber: "",
           roomType: "single",
         });
-        setImage(null);
+
       } else {
         toast.error(response.data.message || "Failed to add member");
       }
@@ -372,48 +315,7 @@ const AddMember = () => {
       <h2>Add New Member</h2>
 
       <div className="member-form">
-        <div className="form-group">
-          <p>
-            Profile Picture <span className="required">*</span>
-          </p>
-          <label
-            htmlFor="file-input"
-            className={`image-upload ${dragOver ? "drag-over" : ""} ${
-              imageError ? "error" : ""
-            }`}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragOver(true);
-            }}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              setDragOver(false);
-            }}
-            onDrop={handleImageDrop}
-          >
-            <img
-              src={image ? URL.createObjectURL(image) : upload_area}
-              className="profile-preview"
-              alt={image ? "Profile preview" : "Upload area"}
-            />
-            {!image && (
-              <div className="upload-overlay">
-                <i className="fas fa-cloud-upload-alt"></i>
-                <p>Drag and drop an image here or click to browse</p>
-                <small>Maximum file size: 5MB</small>
-              </div>
-            )}
-            {imageError && <div className="error-message">{imageError}</div>}
-          </label>
-          <input
-            onChange={imageHandler}
-            type="file"
-            name="image"
-            id="file-input"
-            accept="image/*"
-            hidden
-          />
-        </div>
+
 
         <div className="form-group">
           <p>
